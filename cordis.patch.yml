@@ -1,0 +1,5 @@
+
+- insert:
+    - id: web-focus
+      name: 'dsh-plugin-web-focus'
+      config: {}

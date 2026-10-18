@@ -1,0 +1,68 @@
+{
+  "name": "dsh-plugin-web-focus",
+  "version": "0.2.1",
+  "type": "module",
+  "description": "Focused page reading for DSH: web_focus relevance selection with rare-term coverage, link compression, raw-text retention, caching and section windows.",
+  "license": "MIT",
+  "author": "shutongcao1-design",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shutongcao1-design/dsh_WebFocus.git"
+  },
+  "homepage": "https://github.com/shutongcao1-design/dsh_WebFocus#readme",
+  "bugs": {
+    "url": "https://github.com/shutongcao1-design/dsh_WebFocus/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json",
+    "./lib/*.js": "./lib/*.js",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "locale",
+    "icon.svg",
+    "cordis.patch.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "icon": "./icon.svg",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "cordis",
+    "plugin",
+    "bundle",
+    "web-fetch",
+    "context-window",
+    "markdown"
+  ],
+  "meta": {
+    "title": "web-focus — focused page reading",
+    "description": "Selects the sentences that answer a focus, guarantees coverage of rare query terms, compresses links, keeps the uncompressed original retrievable and caches it, so web_focus no longer floods the context."
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/schemastery": ">=3.0.0 <4"
+  },
+  "devDependencies": {
+    "@deepseek-ai/schemastery": "^3.18.5"
+  }
+}

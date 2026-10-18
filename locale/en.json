@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "web-focus — focused page reading",
+    "description": "Selects the parts of a page relevant to a focus, compresses links, keeps the uncompressed original retrievable and caches it, so a focused read no longer floods the context."
+  }
+}

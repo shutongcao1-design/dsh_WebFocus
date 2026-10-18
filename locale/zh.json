@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "web-focus — 聚焦阅读",
+    "description": "按 focus 选出页面中相关的部分、压缩链接、保留可回取的未压缩原文并缓存，让 web_focus 的阅读结果不再灌满上下文。"
+  }
+}
