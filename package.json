@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-web-focus",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "description": "Focused page reading for DSH: web_focus relevance selection with rare-term coverage, link compression, raw-text retention, caching and section windows.",
   "license": "MIT",

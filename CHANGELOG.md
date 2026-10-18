@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.2 (2026-10-18)
+
+- Focused digests now admit only headings that contain a focus term, at most 8;
+  unmatched headings are skipped by both the forced set and the score fill. On
+  the San Francisco check this removed the 19 heading lines; the digest is now
+  17 non-omitted lines with 0 headings (2 navigation links and 4 citation/footer
+  lines remain). The zero-match fallback still returns the outline.
+- `SANITIZE_CALL_SITES` now names `assemble.js`'s `compressStage`; the stale
+  `provider.js` entry is gone.
+- Added a regression test for stale sanitize call-site references.
+
 ## 0.2.1 (2026-10-18)
 
 - Query-term coverage now applies to **every** content-bearing focus term, not
@@ -10,7 +21,7 @@
 - The minimum focus budget is 4k (was 3k), so a five-attribute focus has room
   for every aspect.
 - Long pages force at most 20 headings, so a table of contents cannot consume
-  the focus budget.
+  the focus budget (superseded by 0.2.2's focus-matched cap).
 - The founding-date pass recognises `founding` and `foundation`, in addition to
   `founded`, `established` and `incorporated`.
 - Added a synthetic regression test for a multi-attribute focus with a dated

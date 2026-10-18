@@ -16,6 +16,8 @@ test('multi-attribute focus keeps the best answer and the dated founding row', a
   )
   const body = [
     '# City report',
+    'This report covers the city in two introductory sentences.',
+    'It is followed by section leads and the answer rows.',
     ...headings,
     'According to the 2020 census, the population was 873,965.',
     '| Mayor | Daniel Lurie |',
@@ -28,9 +30,29 @@ test('multi-attribute focus keeps the best answer and the dated founding row', a
   for (const fact of ['873,965', 'Daniel Lurie', 'June 29, 1776']) {
     assert.ok(picked.text.includes(fact), `multi-attribute digest dropped ${fact}`)
   }
+  const headingSet = new Set(Array.from({ length: 30 }, (_, i) => `Section ${i}`))
+  const headingLines = picked.text.split('\n').filter((line) => headingSet.has(line))
+  assert.equal(
+    headingLines.length,
+    0,
+    `focus-unmatched headings should not consume the digest, got ${headingLines.length}`,
+  )
 
   const founding = selectRelevant(body, 'founding date')
   assert.ok(founding.text.includes('June 29, 1776'), 'the "founding" wording must trigger date coverage')
+})
+
+test('sanitize call sites reference current modules', async () => {
+  const { SANITIZE_CALL_SITES } = await import('../lib/sanitize.js')
+  assert.ok(SANITIZE_CALL_SITES.length > 0)
+  assert.ok(
+    SANITIZE_CALL_SITES.every((site) => !site.includes('provider.js')),
+    'the removed provider.js must not remain a sanitize call site',
+  )
+  assert.ok(
+    SANITIZE_CALL_SITES.some((site) => site.startsWith('assemble.js:')),
+    'compressStage is the current sanitize call site',
+  )
 })
 
 test('capPageText respects its hard limit and explains the cut', async () => {

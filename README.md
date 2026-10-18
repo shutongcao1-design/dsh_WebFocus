@@ -14,12 +14,23 @@ disk, and labels exactly how much was omitted.
 plugin reaches the network only through the public `ctx.web.fetch()` API. There is
 no `fetchProvider` patch and disabling the bundle cannot break `web_fetch`.
 
+## What changed in 0.2.2 (2026-10-18)
+
+- A focused digest admits only headings that contain a focus term (at most 8);
+  unmatched headings are skipped by both the forced set and the score fill. The
+  zero-match fallback still returns the page outline. On the San Francisco check
+  this removed the 19 heading lines; the digest is now 17 non-omitted lines with
+  0 headings (2 navigation links and 4 citation/footer lines remain).
+- `SANITIZE_CALL_SITES` points at `assemble.js`'s `compressStage`; the stale
+  `provider.js` reference is removed.
+
 ## What changed in 0.2.1 (2026-10-18)
 
 - Every content-bearing focus term now keeps its best sentence, not only terms
   below a rarity threshold. `population` no longer loses to rarer words.
 - The strongest query-bearing body sentences are protected from coverage and
-  reconciliation, and long pages force at most 20 headings.
+  reconciliation, and long pages force at most 20 headings (0.2.2 narrows this to
+  focus-matched headings).
 - `founding` / `foundation` now trigger the founding-date pass alongside
   `founded` / `established` / `incorporated`.
 - The live-page check below states the exact focus used.
@@ -30,22 +41,22 @@ The unreleased 0.1.0 prototype took over the fetch path and, when a digest
 retained under 40% of a page's sentences, **injected the whole compressed page
 instead**. A controlled benchmark (below) measured what that did:
 
-| Page size | 0.1.0: injected | 0.2.0: injected | 0.1.0: key sentences kept | 0.2.0 |
+| Page size | 0.1.0: injected | 0.2.x: injected | 0.1.0: key sentences kept | 0.2.x |
 |---|---|---|---|---|
-| 10k chars | 6.9k | 2.7k | 76% | **100%** |
-| 25k | 15.5k | 2.5k | 94% | **100%** |
-| 50k | 62k (full text) | 3.9k | 100% (by accident) | **100%** |
-| 100k | 79.8k (capped full text) | 4.2k | 61% | **100%** |
-| 200k | 79.8k (capped full text) | 4.1k | 56% | **100%** |
+| 10k chars | 6.9k | 2.9k | 76% | **100%** |
+| 25k | 15.5k | 2.4k | 94% | **100%** |
+| 50k | 62k (full text) | 4.0k | 100% (by accident) | **100%** |
+| 100k | 79.8k (capped full text) | 4.3k | 61% | **100%** |
+| 200k | 79.8k (capped full text) | 4.4k | 56% | **100%** |
 | no matching content | 30k / 80k | 644 / 1.7k | — | — |
 
 Live-page checks, same code path (measured during development):
 
-- `en.wikipedia.org/wiki/San_Francisco`: 459,687 raw chars → 3,876 body chars
+- `en.wikipedia.org/wiki/San_Francisco`: 459,687 raw chars → 3,765 body chars
   (0.8% of the raw page) with focus `population mayor mission founding date`.
   Population `873,965`, mayor `Daniel Lurie`, and `June 29, 1776` are all
   present. The old full-text fallback produced 79.8k chars on this page.
-- `zh.wikipedia.org/wiki/Xiamen`: 335,038 raw chars → 3,966 body chars (1.2% of
+- `zh.wikipedia.org/wiki/Xiamen`: 335,038 raw chars → 3,946 body chars (1.2% of
   the raw page). The Siming district and Hubin North Road 61 are present.
 
 Four changes produced that:
@@ -70,9 +81,10 @@ Four changes produced that:
    unless forced, block-cohesive, or coverage-protected. Whole low-score blocks are
    dropped together, so list items stay whole.
 4. **Answer protection and a heading cap.** The top query-bearing body sentences
-   are protected from coverage and reconciliation, and at most 20 headings are
-   forced on a long page. This keeps a multi-attribute answer in the digest even
-   when a table of contents would otherwise consume the budget.
+   are protected from coverage and reconciliation, and only headings that contain
+   a focus term can enter the digest (at most 8); unmatched headings are skipped
+   by both the forced set and score fill. This keeps a multi-attribute answer in
+   the digest and stops a table of contents from consuming the budget.
 
 Two measured selection bugs were also fixed: the budget-reconciliation pass used
 to sacrifice a rank-2 answer sentence (score 44.7) to keep low-score "sticky"
@@ -85,7 +97,7 @@ instead of being mistaken for menu lines.
 
 ```
 raw text → strip invisible chars → compress links / drop nav → split sentences
-        → forced: first 2 + last 2 + up to 20 headings
+        → forced: first 2 + last 2 + query-matched headings (at most 8)
         → score fill: focus-sized budget 4k–12k
         → protect the top query-bearing answer sentences
         → query-term/role/date coverage (displaces ordinary filler)
@@ -198,7 +210,7 @@ update any profile patch that referenced its provider id.
 ## Development
 
 ```sh
-node --test          # 30 tests; integration tests skip when the host peer is absent
+node --test          # 31 tests; integration tests skip when the host peer is absent
 ```
 
 The package is self-contained: shared helpers are vendored under `lib/vendor/`,
